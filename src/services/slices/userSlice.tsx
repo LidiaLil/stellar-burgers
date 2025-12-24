@@ -64,7 +64,7 @@ export const loginUser = createAsyncThunk(
 
 // Асинхронный экшен для получения данных пользователя
 //Используется при загрузке приложения, чтобы проверить авторизацию.
-export const getUserThunk = createAsyncThunk(
+export const getUser = createAsyncThunk(
   'user/getUser',
   async () => {
     const response = await getUserApi(); // Запрос к /api/user
@@ -141,23 +141,24 @@ export const userSlice = createSlice({
           'Ошибка при входе пользователя';
       })
       // Получение данных пользователя в процессе
-      .addCase(getUserThunk.pending, (state) => {
+      .addCase(getUser.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
       // Получение данных пользователя успешно
-      .addCase(getUserThunk.fulfilled, (state, action) => {
+      .addCase(getUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload;
         state.isInit = true;
       })
       // Получение данных пользователя неуспешно
-      .addCase(getUserThunk.rejected, (state, action) => {
+      .addCase(getUser.rejected, (state, action) => {
         state.isLoading = false;
+        state.isInit = false;
+        state.user = null;
         state.error =
           action.error.message ||
-          'Ошибка при получении данных пользователя';
-        state.isInit = true;
+          'Пользователь не авторизован';
       })
       // Обновление данных пользователя в процессе
       .addCase(updateUser.pending, (state) => {
@@ -185,6 +186,7 @@ export const userSlice = createSlice({
       .addCase(logoutUser.fulfilled, (state) => {
         state.isLoading = false;
         state.user = null;
+        state.isInit = false;
       })
       // Выход из системы неуспешен
       .addCase(logoutUser.rejected, (state, action) => {

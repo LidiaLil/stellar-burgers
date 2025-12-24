@@ -62,9 +62,9 @@ export const OrderCard: FC<OrderCardProps> = memo(
 
     return (
       <OrderCardUI
-        orderInfo={orderInfo}
-        maxIngredients={maxIngredients}
-        locationState={{ background: location }}
+        orderInfo={orderInfo} // оторисувка карточки заказа
+        maxIngredients={maxIngredients} // макс кол-во ингридиентов для отображения
+        locationState={{ background: location }} // состояние локации для модалки
       />
     );
   }

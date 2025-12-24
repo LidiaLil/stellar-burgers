@@ -26,59 +26,63 @@ import {
 } from '@components';
 import ProtectedRoute from '../protected-route/protected-route';
 import { useDispatch, useSelector } from '@store';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getCookie } from '../../utils/cookie';
 import {
-  getUserThunk,
-  init
+  getUser,
+  init,
+  selectUser,
+  selectIsInit,
+  selectIsLoading
 } from '../../services/slices/userSlice';
 import {
   fetchIngredients,
   selectIngredients
 } from '../../services/slices/ingredientsSlice';
 import { TIngredient } from '@utils-types';
+import { clearOrderState } from '../../services/slices/orderSlice';
 
 const App = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const dispatch = useDispatch();
-  const background = location.state?.background; // Получаем фоновое местоположение из состояния навигации
-  const ingredients: TIngredient[] = useSelector(
-    selectIngredients
-  );
-  const onCloseModal = () => navigate(-1); // Функция закрытия модального окна
+  const location = useLocation();
+  const background = location.state?.background;
+
+  // Получаем номер заказа из пути, если он там есть
+  const getOrderNumber = () => {
+    const path = location.pathname.split('/'); // Разделяем путь на части
+    const orderNumber = path[path.length - 1]; // Последняя часть пути - номер заказа
+    return isNaN(Number(orderNumber)) ? '' : orderNumber;
+  };
+
+  const orderNumber = getOrderNumber();
 
   useEffect(() => {
-    console.log('Fetching ingredients...');
-    if (!ingredients || ingredients.length === 0) {
-      console.log('Необходимо загрузить ингредиенты.');
-      dispatch(fetchIngredients());
-    }
-  }, [dispatch, ingredients]);
-
-  useEffect(() => {
-    const token = getCookie('accessToken');
-    if (token) {
-      dispatch(getUserThunk());
-    } else {
-      dispatch(init());
-    }
+    dispatch(fetchIngredients());
   }, [dispatch]);
+
+  useEffect(() => {
+    const accessToken = getCookie('accessToken');
+    const refreshToken =
+      localStorage.getItem('refreshToken');
+    if (accessToken || refreshToken) dispatch(getUser());
+  }, [dispatch]);
+
+  const handleModalClose = () => {
+    navigate(-1);
+    dispatch(clearOrderState());
+  };
 
   return (
     <div className={styles.app}>
       <AppHeader />
       <Routes location={background || location}>
-        {/* Публичные маршруты */}
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
-        <Route path='*' element={<NotFound404 />} />
-
-        {/* Защищенные маршруты */}
         <Route
           path='/login'
           element={
-            <ProtectedRoute onlyUnAuth>
+            <ProtectedRoute anonymous>
               <Login />
             </ProtectedRoute>
           }
@@ -86,7 +90,7 @@ const App = () => {
         <Route
           path='/register'
           element={
-            <ProtectedRoute onlyUnAuth>
+            <ProtectedRoute anonymous>
               <Register />
             </ProtectedRoute>
           }
@@ -94,7 +98,7 @@ const App = () => {
         <Route
           path='/forgot-password'
           element={
-            <ProtectedRoute onlyUnAuth>
+            <ProtectedRoute anonymous>
               <ForgotPassword />
             </ProtectedRoute>
           }
@@ -102,17 +106,31 @@ const App = () => {
         <Route
           path='/reset-password'
           element={
-            <ProtectedRoute onlyUnAuth>
+            <ProtectedRoute anonymous>
               <ResetPassword />
             </ProtectedRoute>
           }
         />
-
-        {/* Защищенные маршруты - только для авторизованных */}
+        <Route
+          path='/feed/:number'
+          element={<OrderInfo />}
+        />
+        <Route
+          path='/ingredients/:id'
+          element={<IngredientDetails />}
+        />
+        <Route
+          path='/profile/orders/:number'
+          element={
+            <ProtectedRoute>
+              <OrderInfo />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path='/profile'
           element={
-            <ProtectedRoute onlyUnAuth={false}>
+            <ProtectedRoute>
               <Profile />
             </ProtectedRoute>
           }
@@ -125,46 +143,41 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        <Route path='*' element={<NotFound404 />} />
       </Routes>
-
-      {/* Модальные окна */}
-      {/* Модальные окна поверх текущей страницы */}
       {background && (
         <Routes>
-          {/* Модалка с информацией о заказе в ленте */}
           <Route
             path='/feed/:number'
             element={
               <Modal
-                onClose={onCloseModal}
-                title={'Описание заказа'}
+                title={`Информация по заказу #${orderNumber}`}
+                onClose={handleModalClose}
               >
                 <OrderInfo />
               </Modal>
             }
           />
-
-          {/* Модалка с информацией о ингредиенте */}
           <Route
             path='/ingredients/:id'
             element={
               <Modal
-                onClose={onCloseModal}
-                title={'Описание ингредиента'}
+                title='Состав ингредиента'
+                onClose={() => {
+                  navigate(-1);
+                }}
               >
                 <IngredientDetails />
               </Modal>
             }
           />
-
-          {/* Модалка с информацией о заказе в профиле */}
           <Route
             path='/profile/orders/:number'
             element={
               <ProtectedRoute>
                 <Modal
-                  onClose={onCloseModal}
-                  title={'Описание заказа'}
+                  title={`Информация по заказу #${orderNumber}`}
+                  onClose={handleModalClose}
                 >
                   <OrderInfo />
                 </Modal>
