@@ -4,11 +4,14 @@ import styles from './constructor-page.module.css';
 
 import { ConstructorPageUIProps } from './type';
 import { Preloader } from '@ui';
-import { BurgerIngredients, BurgerConstructor } from '@components';
+import {
+  BurgerIngredients,
+  BurgerConstructor
+} from '@components';
 
-export const ConstructorPageUI: FC<ConstructorPageUIProps> = ({
-  isIngredientsLoading
-}) => (
+export const ConstructorPageUI: FC<
+  ConstructorPageUIProps
+> = ({ isIngredientsLoading }) => (
   <>
     {isIngredientsLoading ? (
       <Preloader />

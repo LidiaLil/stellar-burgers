@@ -7,10 +7,15 @@ import {
 import styles from './burger-constructor.module.css';
 import { BurgerConstructorUIProps } from './type';
 import { TConstructorIngredient } from '@utils-types';
-import { BurgerConstructorElement, Modal } from '@components';
+import {
+  BurgerConstructorElement,
+  Modal
+} from '@components';
 import { Preloader, OrderDetailsUI } from '@ui';
 
-export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
+export const BurgerConstructorUI: FC<
+  BurgerConstructorUIProps
+> = ({
   constructorItems,
   orderRequest,
   price,
@@ -43,7 +48,9 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
             <BurgerConstructorElement
               ingredient={item}
               index={index}
-              totalItems={constructorItems.ingredients.length}
+              totalItems={
+                constructorItems.ingredients.length
+              }
               key={item.id}
             />
           )
@@ -75,7 +82,9 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
     )}
     <div className={`${styles.total} mt-10 mr-4`}>
       <div className={`${styles.cost} mr-10`}>
-        <p className={`text ${styles.text} mr-2`}>{price}</p>
+        <p className={`text ${styles.text} mr-2`}>
+          {price}
+        </p>
         <CurrencyIcon type='primary' />
       </div>
       <Button
@@ -88,7 +97,10 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
     </div>
 
     {orderRequest && (
-      <Modal onClose={closeOrderModal} title={'Оформляем заказ...'}>
+      <Modal
+        onClose={closeOrderModal}
+        title={'Оформляем заказ...'}
+      >
         <Preloader />
       </Modal>
     )}
@@ -98,7 +110,9 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
         onClose={closeOrderModal}
         title={orderRequest ? 'Оформляем заказ...' : ''}
       >
-        <OrderDetailsUI orderNumber={orderModalData.number} />
+        <OrderDetailsUI
+          orderNumber={orderModalData.number}
+        />
       </Modal>
     )}
   </section>

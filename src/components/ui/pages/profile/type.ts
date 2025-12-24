@@ -9,6 +9,8 @@ export type ProfileUIProps = {
   isFormChanged: boolean;
   handleSubmit: (e: SyntheticEvent) => void;
   handleCancel: (e: SyntheticEvent) => void;
-  handleInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleInputChange: (
+    e: ChangeEvent<HTMLInputElement>
+  ) => void;
   updateUserError?: string;
 };

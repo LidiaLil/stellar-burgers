@@ -1,10 +1,17 @@
 import { setCookie, getCookie } from './cookie';
-import { TIngredient, TOrder, TOrdersData, TUser } from './types';
+import {
+  TIngredient,
+  TOrder,
+  TOrdersData,
+  TUser
+} from './types';
 
 const URL = process.env.BURGER_API_URL;
 
 const checkResponse = <T>(res: Response): Promise<T> =>
-  res.ok ? res.json() : res.json().then((err) => Promise.reject(err));
+  res.ok
+    ? res.json()
+    : res.json().then((err) => Promise.reject(err));
 
 type TServerResponse<T> = {
   success: boolean;
@@ -30,7 +37,10 @@ export const refreshToken = (): Promise<TRefreshResponse> =>
       if (!refreshData.success) {
         return Promise.reject(refreshData);
       }
-      localStorage.setItem('refreshToken', refreshData.refreshToken);
+      localStorage.setItem(
+        'refreshToken',
+        refreshData.refreshToken
+      );
       setCookie('accessToken', refreshData.accessToken);
       return refreshData;
     });
@@ -43,11 +53,14 @@ export const fetchWithRefresh = async <T>(
     const res = await fetch(url, options);
     return await checkResponse<T>(res);
   } catch (err) {
-    if ((err as { message: string }).message === 'jwt expired') {
+    if (
+      (err as { message: string }).message === 'jwt expired'
+    ) {
       const refreshData = await refreshToken();
       if (options.headers) {
-        (options.headers as { [key: string]: string }).authorization =
-          refreshData.accessToken;
+        (
+          options.headers as { [key: string]: string }
+        ).authorization = refreshData.accessToken;
       }
       const res = await fetch(url, options);
       return await checkResponse<T>(res);
@@ -176,7 +189,9 @@ export const loginUserApi = (data: TLoginData) =>
       return Promise.reject(data);
     });
 
-export const forgotPasswordApi = (data: { email: string }) =>
+export const forgotPasswordApi = (data: {
+  email: string;
+}) =>
   fetch(`${URL}/password-reset`, {
     method: 'POST',
     headers: {
@@ -190,7 +205,10 @@ export const forgotPasswordApi = (data: { email: string }) =>
       return Promise.reject(data);
     });
 
-export const resetPasswordApi = (data: { password: string; token: string }) =>
+export const resetPasswordApi = (data: {
+  password: string;
+  token: string;
+}) =>
   fetch(`${URL}/password-reset/reset`, {
     method: 'POST',
     headers: {
@@ -213,7 +231,9 @@ export const getUserApi = () =>
     } as HeadersInit
   });
 
-export const updateUserApi = (user: Partial<TRegisterData>) =>
+export const updateUserApi = (
+  user: Partial<TRegisterData>
+) =>
   fetchWithRefresh<TUserResponse>(`${URL}/auth/user`, {
     method: 'PATCH',
     headers: {

@@ -55,7 +55,9 @@
 }
 
 .noBunsBottom {
-  border-radius: var(--bottom-constructor-item-border-radius);
+  border-radius: var(
+    --bottom-constructor-item-border-radius
+  );
 }
 
 .element {
