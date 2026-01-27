@@ -1,6 +1,9 @@
 import { FC } from 'react';
 
-import { Button, Input } from '@zlden/react-developer-burger-ui-components';
+import {
+  Button,
+  Input
+} from '@zlden/react-developer-burger-ui-components';
 import styles from './profile.module.css';
 import commonStyles from '../common.module.css';
 
@@ -73,7 +76,11 @@ export const ProfileUI: FC<ProfileUIProps> = ({
             >
               Отменить
             </Button>
-            <Button type='primary' size='medium' htmlType='submit'>
+            <Button
+              type='primary'
+              size='medium'
+              htmlType='submit'
+            >
               Сохранить
             </Button>
           </div>
