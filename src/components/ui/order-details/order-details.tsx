@@ -9,6 +9,7 @@ export const OrderDetailsUI: React.FC<
   <>
     <h2
       className={`${styles.title} text text_type_digits-large mt-2 mb-4`}
+      data-cy='order-number' // ← НОМЕР ЗАКАЗА
     >
       {orderNumber}
     </h2>
@@ -19,8 +20,12 @@ export const OrderDetailsUI: React.FC<
       className={styles.img}
       src={doneImg}
       alt='изображение статуса заказа.'
+      data-cy='order-done-image' // ← ИЗОБРАЖЕНИЕ СТАТУСА ЗАКАЗА
     />
-    <p className='text text_type_main-default mb-1'>
+    <p
+      className='text text_type_main-default mb-1'
+      data-cy='order-status' // ← СТАТУС ЗАКАЗА
+    >
       Ваш заказ начали готовить
     </p>
     <p

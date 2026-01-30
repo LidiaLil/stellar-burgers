@@ -23,9 +23,15 @@ export const BurgerConstructorUI: FC<
   onOrderClick,
   closeOrderModal
 }) => (
-  <section className={styles.burger_constructor}>
+  <section
+    className={styles.burger_constructor}
+    data-cy='constructor'
+  >
     {constructorItems.bun ? (
-      <div className={`${styles.element} mb-4 mr-4`}>
+      <div
+        className={`${styles.element} mb-4 mr-4`}
+        data-cy='constructor-bun-top' // ← ВЕРХНЯЯ БУЛКА
+      >
         <ConstructorElement
           type='top'
           isLocked
@@ -37,6 +43,7 @@ export const BurgerConstructorUI: FC<
     ) : (
       <div
         className={`${styles.noBuns} ${styles.noBunsTop} ml-8 mb-4 mr-5 text text_type_main-default`}
+        data-cy='constructor-empty-bun-top' // ← ПУСТОЙ ПЛЕЙСХОЛДЕР
       >
         Выберите булки
       </div>
@@ -58,13 +65,17 @@ export const BurgerConstructorUI: FC<
       ) : (
         <div
           className={`${styles.noBuns} ml-8 mb-4 mr-5 text text_type_main-default`}
+          data-cy='constructor-filling-empty' // ← ПУСТАЯ НАЧИНКА
         >
           Выберите начинку
         </div>
       )}
     </ul>
     {constructorItems.bun ? (
-      <div className={`${styles.element} mt-4 mr-4`}>
+      <div
+        className={`${styles.element} mt-4 mr-4`}
+        data-cy='constructor-bun-bottom' // ← НИЖНЯЯ БУЛКА
+      >
         <ConstructorElement
           type='bottom'
           isLocked
@@ -76,6 +87,7 @@ export const BurgerConstructorUI: FC<
     ) : (
       <div
         className={`${styles.noBuns} ${styles.noBunsBottom} ml-8 mb-4 mr-5 text text_type_main-default`}
+        data-cy='constructor-empty-bun-bottom' // ← ПУСТОЙ ПЛЕЙСХОЛДЕР
       >
         Выберите булки
       </div>
@@ -93,6 +105,7 @@ export const BurgerConstructorUI: FC<
         size='large'
         children='Оформить заказ'
         onClick={onOrderClick}
+        data-cy='order-button' // ← КНОПКА ЗАКАЗА
       />
     </div>
 
