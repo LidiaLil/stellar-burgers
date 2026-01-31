@@ -50,9 +50,14 @@ const config: JestConfigWithTsJest = {
     '^@components$': '<rootDir>/src/components',
     '^@store$': '<rootDir>/src/store',
     '^@pages$': '<rootDir>/src/pages',
-    '^@api$': '<rootDir>/src/utils/api',
+    '^@api$': '<rootDir>/src/utils/burger-api.ts',
     '^@ui$': '<rootDir>/src/components/ui',
+    '^@ui-pages$': '<rootDir>/src/components/ui/pages',
     '^@utils-types$': '<rootDir>/src/utils/types',
+    '^@slices$': '<rootDir>/src/services/slices',
+    '^@selectors': '<rootDir>/src/services/selectors',
+    '^@reducers/(.*)$': '<rootDir>/src/services/reducers',
+
     // Для обработки модулей (CSS, SCSS, изображения и т.д.)
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':

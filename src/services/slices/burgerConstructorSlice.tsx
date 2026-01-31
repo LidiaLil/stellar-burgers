@@ -3,7 +3,20 @@ import {
   TConstructorIngredient,
   TIngredient
 } from '@utils-types';
-import { create } from 'domain';
+
+// Функция для генерации уникального ID
+const generateId = (): string => {
+  // Проверяем, доступен ли crypto.randomUUID (работает в браузере)
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  // Fallback для тестовой среды или старых браузеров
+  return (
+    '_' +
+    Math.random().toString(36).substr(2, 9) +
+    Date.now().toString(36)
+  );
+};
 
 export const burgerConstructorSlice = createSlice({
   name: 'burgerConstructor',
@@ -16,7 +29,7 @@ export const burgerConstructorSlice = createSlice({
       prepare: (ingredient: TIngredient) => {
         const idIngredient: TConstructorIngredient = {
           ...ingredient, // копируем все свойства ингредиента
-          id: crypto.randomUUID() // добавляем уникальный id
+          id: generateId() // добавляем уникальный id
         };
         return { payload: idIngredient };
       },
@@ -72,3 +85,7 @@ export default burgerConstructorSlice.reducer;
 
 export const { constructorState } =
   burgerConstructorSlice.selectors;
+
+export type BurgerConstructorState = ReturnType<
+  typeof burgerConstructorSlice.reducer
+>;
