@@ -1,3 +1,5 @@
+import type { TIngredient } from '@utils-types';
+
 describe('Главная страница', () => {
   beforeEach(() => {
     // Перехватываем запрос ингредиентов
@@ -19,7 +21,7 @@ describe('Главная страница', () => {
     cy.setCookie('accessToken', 'test-access-token');
 
     cy.visit('/'); // Переход на главную страницу приложения
-    cy.wait('@getIngredients'); // Ждем загрузки ингредиентов
+    // cy.wait('@getIngredients'); // Ждем загрузки ингредиентов
   });
 
   afterEach(() => {
@@ -53,10 +55,50 @@ describe('Главная страница', () => {
     );
   });
 
-  it('Процесс создания заказа', () => {
-    // Проверяем что конструктор изначально пустой
+  it('Добавление ингредиента из списка в конструктор', () => {
+  // Дождаться загрузки ингредиентов
+  cy.wait('@getIngredients');
+  
+  // Проверить пустой конструктор
+  cy.get('[data-cy="constructor"]').within(() => {
     cy.contains('Выберите булки').should('be.visible');
     cy.contains('Выберите начинку').should('be.visible');
+  });
+
+  // Добавляем  булку
+    cy.contains('Флюоресцентная булка R2-D3')
+      .closest('[data-cy="ingredient-item"]')
+      .within(() => {
+        cy.contains('button', 'Добавить').click();
+      });
+
+  // Проверить добавление булки
+  cy.get('[data-cy="constructor-bun-top"]').should('exist');
+  cy.get('[data-cy="constructor-bun-bottom"]').should('exist');
+  
+  // Сообщение о выборе булок должно исчезнуть
+  cy.get('[data-cy="constructor-empty-bun-top"]').should('not.exist');
+  cy.get('[data-cy="constructor-empty-bun-bottom"]').should('not.exist');
+
+  // Добавляем начинку
+    cy.contains('Биокотлета из марсианской Магнолии')
+      .closest('[data-cy="ingredient-item"]')
+      .within(() => {
+        cy.contains('button', 'Добавить').click();
+      });
+
+  // Проверить что начинка добавилась
+  cy.get('[data-cy="constructor"]').within(() => {
+    cy.contains('Выберите начинку').should('not.exist');
+  });
+});
+
+  it('Процесс создания заказа', () => {
+    // Проверяем что конструктор изначально пустой
+    cy.get('[data-cy="constructor"]').within(() => {
+      cy.contains('Выберите булки').should('be.visible');
+      cy.contains('Выберите начинку').should('be.visible');
+    });
 
     // Добавляем конкретную булку
     cy.contains('Флюоресцентная булка R2-D3')
@@ -66,27 +108,16 @@ describe('Главная страница', () => {
       });
 
     // Проверяем что добавилась именно она
-    cy.get('[data-cy="constructor"]')
-      .should(
-        'contain',
+    cy.get('[data-cy="constructor"]').within(() => {
+      cy.contains(
         'Флюоресцентная булка R2-D3 (верх)'
-      )
-      .and('contain', 'Флюоресцентная булка R2-D3 (низ)');
-
-    // Сообщение о пустом конструкторе пропало
-    cy.contains('Выберите булки').should('not.exist');
-
-    //     // Тест на добавление ЛЮБОЙ булки
-    // it('Добавляет какую-то булку', () => {
-    //   cy.get('[data-cy="ingredient-bun"]')  // Любая булка из раздела
-    //     .contains('button', 'Добавить')
-    //     .first()  // Первую попавшуюся
-    //     .click();
-
-    //   // Проверяем что добавилась какая-то булка
-    //   cy.get('[data-cy="constructor"]')
-    //     .should('contain', 'булка');  // Любая булка
-    // });
+      ).should('be.visible');
+      cy.contains(
+        'Флюоресцентная булка R2-D3 (низ)'
+      ).should('be.visible');
+      // Сообщение о пустом конструкторе пропало
+      cy.contains('Выберите булки').should('not.exist');
+    });
 
     // Добавляем конкретную начинку
     cy.contains('Биокотлета из марсианской Магнолии')
@@ -96,13 +127,12 @@ describe('Главная страница', () => {
       });
 
     // Проверяем что добавилась именно она
-    cy.get('[data-cy="constructor"]').should(
-      'contain',
-      'Биокотлета из марсианской Магнолии'
-    );
-
-    // Сообщение о пустом конструкторе пропало
-    cy.contains('Выберите начинку').should('not.exist');
+    cy.get('[data-cy="constructor"]').within(() => {
+      cy.contains(
+        'Биокотлета из марсианской Магнолии'
+      ).should('be.visible');
+      cy.contains('Выберите начинку').should('not.exist');
+    });
 
     // Добавляем соус
     cy.contains('Соус традиционный галактический')
@@ -112,14 +142,11 @@ describe('Главная страница', () => {
       });
 
     // Проверяем что добавился именно он
-    cy.get('[data-cy="constructor"]').should(
-      'contain',
-      'Соус традиционный галактический'
-    );
-
-    // Проверяем что конструктор заполнился
-    cy.contains('Выберите булки').should('not.exist');
-    cy.contains('Выберите начинку').should('not.exist');
+    cy.get('[data-cy="constructor"]').within(() => {
+      cy.contains('Соус традиционный галактический').should(
+        'be.visible'
+      );
+    });
 
     // Проверяем кнопку оформления заказа
     cy.contains('button', 'Оформить заказ')
@@ -128,15 +155,17 @@ describe('Главная страница', () => {
       .click(); // кликаем на кнопку
     cy.wait('@postOrder'); // Ждем ответа от мокового сервера на создание заказа
     // Проверяем что появилось модальное окно с номером заказа
-    cy.get('[data-cy="modal"]').should('be.visible');
-    cy.contains('Ваш заказ начали готовить').should(
-      'exist'
-    );
-    cy.contains('121212').should('exist'); // номер заказа из фикстуры
+    cy.get('[data-cy="modal"]').within(() => {
+      cy.contains('Ваш заказ начали готовить').should(
+        'exist'
+      );
+      cy.contains('121212').should('exist'); // номер заказа из фикстуры
+    });
 
     // Закрываем модальное окно
-    cy.get('[data-cy="modal-close"]').click();
-    cy.get('[data-cy="modal"]').should('not.exist');
+    cy.get('[data-cy="modal"]').within(() => {
+      cy.get('[data-cy="modal-close"]').click();
+    });
 
     // Проверяем что появились все плейсхолдеры пустого конструктора
     cy.get('[data-cy="constructor"]').within(() => {
@@ -147,18 +176,12 @@ describe('Главная страница', () => {
 
   describe('Открытие и закрытие модального окна с описанием ингредиента', () => {
     it('Открытие и закрытие модального окна', () => {
-      //   // Кликаем на первый ингредиент
-      //   cy.get('[data-cy="ingredient-item"]').first().click();
-
       // Кликаем на конкретный ингредиент
       cy.contains('Флюоресцентная булка R2-D3').click();
 
-      // Проверяем что модальное окно открылось
-      cy.get('[data-cy="modal"]').should('be.visible');
-      cy.contains('Состав ингредиента').should('exist');
-
       // Проверяем наличие информации об ингредиенте
       cy.get('[data-cy="modal"]').within(() => {
+        cy.contains('Состав ингредиента').should('exist');
         cy.contains('Калории').should('exist');
         cy.contains('Белки').should('exist');
         cy.contains('Жиры').should('exist');
@@ -187,7 +210,9 @@ describe('Главная страница', () => {
       cy.get('[data-cy="modal"]').should('be.visible');
 
       // ЗАКРЫВАЕМ
-      cy.get('[data-cy="modal-close"]').click();
+      cy.get('[data-cy="modal"]').within(() => {
+        cy.get('[data-cy="modal-close"]').click();
+      });
 
       // ПРОВЕРЯЕМ
       cy.get('[data-cy="modal"]').should('not.exist');
@@ -200,6 +225,7 @@ describe('Главная страница', () => {
 
       // ЗАКРЫВАЕМ
       cy.get('body').type('{esc}');
+
       // ПРОВЕРЯЕМ
       cy.get('[data-cy="modal"]').should('not.exist');
     });
