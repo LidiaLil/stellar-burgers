@@ -21,8 +21,8 @@ const feedSlice = createSlice({
   name: 'feed',
   // Начальное состояние в слайсе
   initialState: {
-    feed: {} as TOrdersData | null, // Лента заказов публичная
-    orders: {} as TOrder[], // Заказы пользователя
+    feed: null as TOrdersData | null, // Лента заказов публичная
+    orders: [] as TOrder[], // Заказы пользователя
     isLoading: false,
     error: null as string | null
   },
@@ -83,3 +83,11 @@ export const {
   selectIsLoading,
   selectError
 } = feedSlice.selectors;
+
+// Экспортируем initialState для тестов
+export const initialState = {
+  feed: null as TOrdersData | null,
+  orders: [] as TOrder[],
+  isLoading: false,
+  error: null as string | null
+};

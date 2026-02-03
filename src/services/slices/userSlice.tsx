@@ -137,8 +137,7 @@ export const userSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error =
-          action.error.message ||
-          'Ошибка при входе пользователя';
+          action.error.message || 'Неверные учетные данные';
       })
       // Получение данных пользователя в процессе
       .addCase(getUser.pending, (state) => {
